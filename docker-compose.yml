@@ -1,0 +1,173 @@
+version: '3.3'
+services:
+  postgres:
+    image: postgres:15.2
+    container_name: j-postgres
+    ports:
+      - '5435:5432'
+    environment:
+      POSTGRES_PASSWORD: "user"
+      POSTGRES_USER: "user"
+      POSTGRES_DB: "j-sso"
+    restart: always
+    volumes:
+      - ./docker/postgres/data:/var/lib/postgresql/data
+    networks:
+      - j-network
+
+  redis:
+    image: redis:7.4.0
+    container_name: j-redis
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./docker/redis/data:/root/redis
+    environment:
+      - REDIS_DATABASES=${JSSO_REDIS_DB}
+      - REDIS_PASSWORD=${JSSO_REDIS_PASSWORD}
+    networks:
+      - j-network
+
+  elasticsearch:
+    restart: always
+    build:
+      context: ./elasticsearch
+      dockerfile: Dockerfile
+    container_name: j-elasticsearch
+    volumes:
+      - ./docker/elastic/data:/usr/share/elasticsearch/data
+    environment:
+      discovery.type: 'single-node'
+      xpack.security.enabled: 'true'
+      ELASTIC_USERNAME: ${ELASTICSEARCH_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTICSEARCH_PASSWORD}
+    ports:
+      - '9200:9200'
+    networks:
+      - j-network
+
+  kibana:
+    restart: always
+    image: kibana:7.8.1
+    container_name: j-kibana
+    environment:
+      XPACK_SECURITY_ENABLED: 'true'
+      ELASTICSEARCH_HOSTS: ${ELASTICSEARCH_HOST}
+      ELASTICSEARCH_USERNAME: ${ELASTICSEARCH_USERNAME}
+      ELASTICSEARCH_PASSWORD: ${ELASTICSEARCH_PASSWORD}
+    ports:
+      - 5601:5601
+    networks:
+      - j-network
+
+  sso:
+    container_name: j-sso
+    build:
+      context: ./j-sso
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '7777:7777'
+      - '8777:8000'
+    environment:
+      JSSO_SMTP_EMAIL: <set_value>
+      JSSO_SMTP_EMAIL_PASSWORD: <set_value>
+      JSSO_GITHUB_CLIENT_ID: <set_value>
+      JSSO_GITHUB_CLIENT_SECRET: <set_value>
+      JSSO_GOOGLE_CLIENT_ID: <set_value>
+      JSSO_GOOGLE_CLIENT_SECRET: <set_value>
+      JSSO_YANDEX_CLIENT_ID: <set_value>
+      JSSO_YANDEX_CLIENT_SECRET: <set_value>
+      JSSO_REDIS_DB: ${JSSO_REDIS_DB}
+      JSSO_REDIS_HOST: ${JSSO_REDIS_HOST}
+      JSSO_REDIS_PORT: ${JSSO_REDIS_PORT}
+      JSSO_REDIS_PASSWORD: ${JSSO_REDIS_PASSWORD}
+      JSSO_PG_HOST: postgres
+      JSSO_PG_PORT: 5432
+      JSSO_PG_DB: j-sso
+      JSSO_PG_USER: user
+      JSSO_PG_PASSWORD: user
+      JSSO_PATH_STORAGE: /j-file-storage
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+    volumes:
+      - ./docker/j-sso/file-storage:/j-file-storage
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - j-network
+
+  wms-postgres:
+    image: postgres:15.2
+    container_name: wms-postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: "user"
+      POSTGRES_USER: "user"
+      POSTGRES_DB: "s-wms"
+    restart: always
+    volumes:
+      - ./docker/wms-postgres/data:/var/lib/postgresql/data
+    networks:
+      - j-network
+
+  wms-service:
+    container_name: wms-service
+    build:
+      context: ./s-wms
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '9001:9001'
+      - '9777:8000'
+    environment:
+      SWMS_SSO_URL: http://j-sso:7777
+      SWMS_PG_HOST: j-postgres
+      SWMS_PG_PORT: 5432
+      SWMS_PG_DB: swms
+      SWMS_PG_USER: user
+      SWMS_PG_PASSWORD: user
+      ELASTIC_HOST: ${ELASTICSEARCH_HOST}
+      ELASTIC_USERNAME: ${ELASTICSEARCH_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTICSEARCH_PASSWORD}
+    depends_on:
+      - elasticsearch
+      - postgres
+    networks:
+      - j-network
+
+  wms-client:
+    container_name: wms-client
+    restart: always
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
+    build:
+      context: ./s-wms-client
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - j-network
+
+  swagger-ui:
+    container_name: j-swagger-ui
+    build:
+      context: ./j-swagger-ui
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '7778:7778'
+      - '6777:8000'
+    networks:
+      - j-network
+
+networks:
+  j-network:
+    ipam:
+      driver: default
+      config:
+        - subnet: "14.205.210.0/24"

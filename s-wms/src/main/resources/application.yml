@@ -1,0 +1,75 @@
+server:
+  port: 9001
+logging:
+  level:
+    root: DEBUG
+    javax.management: ERROR
+    org.springframework.security.web.FilterChainProxy: DEBUG
+
+springdoc:
+  auth-types:
+    auth-header-enabled: true
+    client-credentials-enabled: true
+    authorization-code-enabled: true
+  auth-oauth:
+    token-url: http://localhost:7777/oauth2/token
+    authorization_url: http://localhost:7777/oauth2/authorize
+    refresh-url: http://localhost:7777/oauth2/token
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+
+spring:
+  application:
+    name: j-service
+  output:
+    ansi:
+      enabled: ${JSERVICE_ANSI_ENABLED:ALWAYS}
+  mvc:
+    cors:
+      configs:
+        - pattern: /**
+          allowed-origins: "http://localhost:7778,http://localhost:8080,http://localhost:8084"
+          allowed-headers: "*"
+          exposed-headers: "*"
+          allowed-methods: "*"
+          allow-credentials: true
+  security:
+    oauth2:
+      resourceserver:
+        opaquetoken:
+          client-id: j-service-client
+          client-secret: j-service-client
+          introspection-uri: ${SWMS_SSO_URL:http://localhost:7777}/oauth2/token-info
+  datasource:
+    url: jdbc:postgresql://${SWMS_PG_HOST:localhost}:${SWMS_PG_PORT:5432}/${SWMS_PG_DB:s-wms}
+    username: ${SWMS_PG_USER:user}
+    password: ${SWMS_PG_PASSWORD:user}
+    driver-class-name: "org.postgresql.Driver"
+    hikari:
+      connection-timeout: 30000
+      connection-test-query: select 1
+      maximum-pool-size: 10
+      minimum-idle: 10
+      initialization-fail-timeout: 1
+      leak-detection-threshold: 0
+      pool-name: "HikariPool-j-sso"
+      register-mbeans: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    enabled: false
+    change-log: classpath:database/db/changelog.sql
+    contexts: prod, dev
+  elasticsearch:
+    uris: ${ELASTICSEARCH_HOST:http://localhost:9200}
+    username: ${ELASTICSEARCH_USERNAME:elastic}
+    password: ${ELASTICSEARCH_PASSWORD:admin}
+  servlet:
+    multipart:
+      max-request-size: 50MB
+      max-file-size: 50MB
