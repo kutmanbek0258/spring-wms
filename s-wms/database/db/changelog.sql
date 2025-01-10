@@ -189,3 +189,164 @@ create table if not exists wms.receipt_item
 
 alter table wms.receipt_item owner to "user";
 
+create table wms.write_off
+(
+    id                 bigserial not null
+        constraint write_off_pkey
+            primary key,
+    reason             smallint
+        constraint write_off_reason_check
+            check ((reason >= 0) AND (reason <= 2)),
+    depot_id           bigint
+        constraint fk35ydyavboehd755kuyba418m9
+            references wms.depot,
+    created_by         varchar(255),
+    created_date       timestamp(6),
+    last_modified_by   varchar(255),
+    last_modified_date timestamp(6)
+);
+
+alter table wms.write_off owner to "user";
+
+create table wms.write_off_item
+(
+    id                 bigserial not null
+        constraint write_off_item_pkey
+            primary key,
+    quantity           integer   not null,
+    product_id         bigint
+        constraint fkp7jgvevndp95j8ljhkx5b213i
+            references wms.product,
+    write_off_id       bigint
+        constraint fkofmnfvmvdys4iiphhiw1o5c9w
+            references wms.write_off,
+    write_off_item_id  bigint
+        constraint fkennf63kptfdq8s63p1cgywbru
+            references wms.write_off,
+    created_by         varchar(255),
+    created_date       timestamp(6),
+    last_modified_by   varchar(255),
+    last_modified_date timestamp(6)
+);
+
+alter table wms.write_off_item
+    owner to "user";
+
+CREATE OR REPLACE FUNCTION wms.update_product_quantity() RETURNS TRIGGER AS
+$$
+DECLARE
+    receipt_sum integer;
+    write_off_sum integer;
+    totalQuantity integer;
+BEGIN
+
+    IF(TG_OP = 'DELETE') THEN
+        SELECT SUM(quantity)
+        FROM wms.receipt_item
+        WHERE "product_id" = OLD."product_id"
+        INTO receipt_sum;
+
+
+        SELECT SUM(quantity)
+        FROM wms.write_off_item
+        WHERE "product_id" = OLD."product_id"
+        INTO write_off_sum;
+
+        IF (receipt_sum IS NULL) THEN
+            receipt_sum = 0;
+        END IF;
+
+        IF (write_off_sum IS NULL) THEN
+            write_off_sum = 0;
+        END IF;
+
+        totalQuantity = receipt_sum - write_off_sum;
+
+        IF (write_off_sum > receipt_sum) THEN
+            RAISE EXCEPTION USING MESSAGE = CONCAT('the amount of write-offs should not exceed: ', receipt_sum::text, CHR(13),CHR(10), 'current amount: ', write_off_sum::text);
+        END IF;
+
+        UPDATE wms.product SET quantity = totalQuantity
+        WHERE id = OLD."product_id";
+
+        RETURN OLD;
+    ELSE
+        SELECT SUM(quantity)
+        FROM wms.receipt_item
+        WHERE "product_id" = NEW."product_id"
+        INTO receipt_sum;
+
+
+        SELECT SUM(quantity)
+        FROM wms.write_off_item
+        WHERE "product_id" = NEW."product_id"
+        INTO write_off_sum;
+
+        IF (receipt_sum IS NULL) THEN
+            receipt_sum = 0;
+        END IF;
+
+        IF (write_off_sum IS NULL) THEN
+            write_off_sum = 0;
+        END IF;
+
+        totalQuantity = receipt_sum - write_off_sum;
+
+        IF (write_off_sum > receipt_sum) THEN
+            RAISE EXCEPTION USING MESSAGE = CONCAT('the amount of write-offs should not exceed: ', receipt_sum::text, CHR(13),CHR(10), 'current amount: ', write_off_sum::text);
+        END IF;
+
+        UPDATE wms.product SET quantity = totalQuantity
+        WHERE id = NEW."product_id";
+
+        RETURN NEW;
+    END IF;
+
+END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_update_write_off
+    AFTER INSERT OR UPDATE OR DELETE
+    ON wms.write_off_item
+    FOR EACH ROW
+EXECUTE FUNCTION wms.update_product_quantity();
+
+CREATE TRIGGER check_update_receipt
+    AFTER INSERT OR UPDATE OR DELETE
+    ON wms.receipt_item
+    FOR EACH ROW
+EXECUTE FUNCTION wms.update_product_quantity();
+
+CREATE OR REPLACE FUNCTION wms.update_product_cost() RETURNS TRIGGER AS
+$$
+DECLARE
+    last_cost integer;
+BEGIN
+    IF(TG_OP = 'DELETE') THEN
+        SELECT price
+        FROM wms.receipt_item
+        WHERE "product_id" = OLD."product_id"
+        ORDER BY id DESC
+        LIMIT 1 INTO last_cost;
+
+        IF NOT FOUND THEN
+            RETURN OLD;
+        END IF;
+
+        UPDATE wms.product SET cost = last_cost
+        WHERE product.id = OLD."product_id";
+
+        RETURN OLD;
+    ELSE
+        UPDATE wms.product SET cost = NEW.price
+        WHERE product.id = NEW."product_id";
+
+        RETURN NEW;
+    END IF;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_update_cost
+    AFTER INSERT OR UPDATE OR DELETE ON wms.receipt_item
+    FOR EACH ROW
+EXECUTE FUNCTION wms.update_product_cost();

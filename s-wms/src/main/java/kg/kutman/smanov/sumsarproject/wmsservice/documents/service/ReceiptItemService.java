@@ -47,7 +47,7 @@ public class ReceiptItemService {
     public ReceiptItemDto update(ReceiptItemDto receiptItemDto, Long id) {
         ReceiptItemDto data = findById(id);
         ReceiptItem entity = receiptItemMapper.toEntity(receiptItemDto);
-        BeanUtil.copyProperties(data, entity);
-        return save(receiptItemMapper.toDto(entity));
+        BeanUtil.copyProperties(entity, data, "id");
+        return save(data);
     }
 }

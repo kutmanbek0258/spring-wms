@@ -1,4 +1,4 @@
 --liquibase formatted sql
 
 --changeset kutman:schemas-1
-CREATE SCHEMA wms;
+CREATE SCHEMA IF NOT EXISTS wms;

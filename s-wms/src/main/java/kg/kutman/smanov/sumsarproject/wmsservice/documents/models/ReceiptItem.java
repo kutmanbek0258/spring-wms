@@ -26,11 +26,11 @@ public class ReceiptItem extends AuditableCustom<String> {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "receiptId")
+    @JoinColumn(name = "receipt_id")
     private Receipt receipt;
 
     @ManyToOne
-    @JoinColumn(name = "productId")
+    @JoinColumn(name = "product_id")
     private Product product;
 
     private Double quantity;

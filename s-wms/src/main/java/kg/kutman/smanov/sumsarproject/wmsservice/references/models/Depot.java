@@ -33,10 +33,10 @@ public class Depot extends AuditableCustom<String> {
     private String address;
 
     @ManyToOne
-    @JoinColumn(name = "companyId")
+    @JoinColumn(name = "company_id")
     private Company company;
 
     @ManyToOne
-    @JoinColumn(name = "managerId")
+    @JoinColumn(name = "manager_id")
     private Person manager;
 }

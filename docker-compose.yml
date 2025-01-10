@@ -104,9 +104,9 @@ services:
     ports:
       - '5432:5432'
     environment:
-      POSTGRES_PASSWORD: "user"
-      POSTGRES_USER: "user"
-      POSTGRES_DB: "s-wms"
+      SWMS_PG_USER: "user"
+      SWMS_PG_PASSWORD: "user"
+      SWMS_PG_DB: "s-wms"
     restart: always
     volumes:
       - ./docker/wms-postgres/data:/var/lib/postgresql/data
@@ -124,9 +124,9 @@ services:
       - '9777:8000'
     environment:
       SWMS_SSO_URL: http://j-sso:7777
-      SWMS_PG_HOST: j-postgres
+      SWMS_PG_HOST: wms-postgres
       SWMS_PG_PORT: 5432
-      SWMS_PG_DB: swms
+      SWMS_PG_DB: s-wms
       SWMS_PG_USER: user
       SWMS_PG_PASSWORD: user
       ELASTIC_HOST: ${ELASTICSEARCH_HOST}
@@ -134,7 +134,8 @@ services:
       ELASTIC_PASSWORD: ${ELASTICSEARCH_PASSWORD}
     depends_on:
       - elasticsearch
-      - postgres
+      - wms-postgres
+      - wms-client
     networks:
       - j-network
 

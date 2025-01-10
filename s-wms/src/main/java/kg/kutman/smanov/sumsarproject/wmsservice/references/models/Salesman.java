@@ -25,10 +25,10 @@ public class Salesman extends AuditableCustom<String> {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "personId")
+    @JoinColumn(name = "person_id")
     private Person person;
 
     @ManyToOne
-    @JoinColumn(name = "companyId")
+    @JoinColumn(name = "company_id")
     private Company company;
 }
