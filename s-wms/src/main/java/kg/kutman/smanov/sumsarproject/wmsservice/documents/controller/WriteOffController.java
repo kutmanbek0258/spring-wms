@@ -53,7 +53,7 @@ public class WriteOffController {
     }
 
     @GetMapping("/page-query")
-    public ResponseEntity<Page<WriteOffDto>> pageQuery(WriteOffDto writeOffDto, @PageableDefault(sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<Page<WriteOffDto>> pageQuery(WriteOffDto writeOffDto, @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<WriteOffDto> writeOffPage = writeOffService.findByCondition(writeOffDto, pageable);
         return ResponseEntity.ok(writeOffPage);
     }

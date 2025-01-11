@@ -7,6 +7,9 @@ import Salesmen from '@/components/references/Salesmen.vue';
 import SalesmenDialog from '@/components/references/SalesmenDialog.vue';
 import PriceTemplates from "@/components/references/PriceTemplates.vue";
 import ProductGroups from "@/components/references/ProductGroups.vue";
+import Persons from "@/components/references/Persons.vue";
+import Depots from "@/components/references/Depots.vue";
+
 
 </script>
 
@@ -20,6 +23,18 @@ import ProductGroups from "@/components/references/ProductGroups.vue";
         </v-col>
         <v-col cols="12">
             <PriceTemplates/>
+        </v-col>
+        <v-col cols="12">
+            <Suppliers/>
+        </v-col>
+        <v-col cols="12">
+            <Salesmen/>
+        </v-col>
+        <v-col cols="12">
+            <Persons/>
+        </v-col>
+        <v-col cols="12">
+            <Depots/>
         </v-col>
     </v-row>
 </template> 

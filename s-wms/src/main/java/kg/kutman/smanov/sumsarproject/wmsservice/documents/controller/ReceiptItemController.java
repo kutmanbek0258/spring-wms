@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/receipt-item")
@@ -52,9 +53,10 @@ public class ReceiptItemController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/page-query/{id}")
-    public ResponseEntity<Page<ReceiptItemDto>> pageQuery(@PathVariable("id") Long id, ReceiptItemDto receiptItemDto, @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<ReceiptItemDto> receiptItemPage = receiptItemService.findByCondition(id, receiptItemDto, pageable);
+    @GetMapping("/page-query")
+    public ResponseEntity<Page<ReceiptItemDto>> pageQuery(@RequestParam Long receiptId, @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
+                                                              Pageable pageable) {
+        Page<ReceiptItemDto> receiptItemPage = receiptItemService.findByCondition(receiptId, pageable);
         return ResponseEntity.ok(receiptItemPage);
     }
 

@@ -22,6 +22,11 @@ import lombok.Setter;
 @Entity
 @Table(schema = "wms", name = "receipt")
 public class Receipt extends AuditableCustom<String> {
+
+    public Receipt(Long id) {
+        this.id = id;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

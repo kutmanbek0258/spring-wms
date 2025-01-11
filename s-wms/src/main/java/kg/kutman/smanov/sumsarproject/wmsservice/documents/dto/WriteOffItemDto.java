@@ -7,7 +7,7 @@ public class WriteOffItemDto extends AbstractDto<Long> {
     private Long id;
     private WriteOff writeOff;
     private Product product;
-    private int quantity;
+    private Double quantity;
 
     public WriteOffItemDto() {
     }
@@ -36,11 +36,11 @@ public class WriteOffItemDto extends AbstractDto<Long> {
         return this.product;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Double quantity) {
         this.quantity = quantity;
     }
 
-    public int getQuantity() {
+    public Double getQuantity() {
         return this.quantity;
     }
 }

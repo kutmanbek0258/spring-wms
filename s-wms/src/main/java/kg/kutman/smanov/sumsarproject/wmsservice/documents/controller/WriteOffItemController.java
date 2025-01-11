@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/write-off-item")
@@ -53,8 +54,8 @@ public class WriteOffItemController {
     }
 
     @GetMapping("/page-query")
-    public ResponseEntity<Page<WriteOffItemDto>> pageQuery(WriteOffItemDto writeOffItemDto, @PageableDefault(sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<WriteOffItemDto> writeOffItemPage = writeOffItemService.findByCondition(writeOffItemDto, pageable);
+    public ResponseEntity<Page<WriteOffItemDto>> pageQuery(@RequestParam Long writeOffId, @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<WriteOffItemDto> writeOffItemPage = writeOffItemService.findByCondition(writeOffId, pageable);
         return ResponseEntity.ok(writeOffItemPage);
     }
 

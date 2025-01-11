@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import kg.kutman.smanov.sumsarproject.wmsservice.documents.dto.WriteOffItemDto;
 import kg.kutman.smanov.sumsarproject.wmsservice.documents.mapper.WriteOffItemMapper;
+import kg.kutman.smanov.sumsarproject.wmsservice.documents.models.WriteOff;
 import kg.kutman.smanov.sumsarproject.wmsservice.documents.models.WriteOffItem;
 import kg.kutman.smanov.sumsarproject.wmsservice.documents.repository.WriteOffItemRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +39,9 @@ public class WriteOffItemService {
         return writeOffItemMapper.toDto(repository.findById(id).orElseThrow());
     }
 
-    public Page<WriteOffItemDto> findByCondition(WriteOffItemDto writeOffItemDto, Pageable pageable) {
-        Page<WriteOffItem> entityPage = repository.findAll(pageable);
+    public Page<WriteOffItemDto> findByCondition(Long writeOffId, Pageable pageable) {
+        WriteOff writeOff = new WriteOff(writeOffId);
+        Page<WriteOffItem> entityPage = repository.findAllByWriteOff(writeOff, pageable);
         List<WriteOffItem> entities = entityPage.getContent();
         return new PageImpl<>(writeOffItemMapper.toDto(entities), pageable, entityPage.getTotalElements());
     }

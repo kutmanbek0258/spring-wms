@@ -3,6 +3,7 @@ package kg.kutman.smanov.sumsarproject.wmsservice.documents.service;
 import cn.hutool.core.bean.BeanUtil;
 import kg.kutman.smanov.sumsarproject.wmsservice.documents.dto.ReceiptItemDto;
 import kg.kutman.smanov.sumsarproject.wmsservice.documents.mapper.ReceiptItemMapper;
+import kg.kutman.smanov.sumsarproject.wmsservice.documents.models.Receipt;
 import kg.kutman.smanov.sumsarproject.wmsservice.documents.models.ReceiptItem;
 import kg.kutman.smanov.sumsarproject.wmsservice.documents.repository.ReceiptItemRepository;
 import jakarta.transaction.Transactional;
@@ -38,8 +39,9 @@ public class ReceiptItemService {
         return receiptItemMapper.toDto(repository.findById(id).orElseThrow());
     }
 
-    public Page<ReceiptItemDto> findByCondition(Long id, ReceiptItemDto receiptItemDto, Pageable pageable) {
-        Page<ReceiptItem> entityPage = repository.findByReceipt(id, pageable);
+    public Page<ReceiptItemDto> findByCondition(Long id, Pageable pageable) {
+        Receipt receipt = new Receipt(id);
+        Page<ReceiptItem> entityPage = repository.findByReceipt(receipt, pageable);
         List<ReceiptItem> entities = entityPage.getContent();
         return new PageImpl<>(receiptItemMapper.toDto(entities), pageable, entityPage.getTotalElements());
     }
@@ -47,7 +49,7 @@ public class ReceiptItemService {
     public ReceiptItemDto update(ReceiptItemDto receiptItemDto, Long id) {
         ReceiptItemDto data = findById(id);
         ReceiptItem entity = receiptItemMapper.toEntity(receiptItemDto);
-        BeanUtil.copyProperties(entity, data, "id");
+        BeanUtil.copyProperties(entity, data);
         return save(data);
     }
 }

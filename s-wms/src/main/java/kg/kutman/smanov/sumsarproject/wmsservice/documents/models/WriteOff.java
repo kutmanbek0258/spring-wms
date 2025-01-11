@@ -26,6 +26,11 @@ import java.util.List;
 @Entity
 @Table(schema = "wms", name = "write_off")
 public class WriteOff extends AuditableCustom<String> {
+
+    public WriteOff(Long id) {
+        this.id = id;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
