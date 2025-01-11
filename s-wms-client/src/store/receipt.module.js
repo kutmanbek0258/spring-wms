@@ -94,11 +94,11 @@ const actions = {
         });
     },
 
-    addReceiptItem({dispatch, commit}, {receiptID, productID, quantity, price}){
-        ReceiptService.addReceiptItem({receiptID, productID, quantity, price}).then(
+    addReceiptItem({dispatch, commit}, {receipt, product, quantity, price}){
+        ReceiptService.addReceiptItem({receipt, product, quantity, price}).then(
             receiptItem => {
                 commit('setReceiptItem', receiptItem.data);
-                dispatch('getAllReceiptItem', {receiptID, sortBy: state.sortBy, order: state.order});
+                dispatch('getAllReceiptItem', {receiptID: receipt.id, sortBy: state.sortBy, order: state.order});
             }
         ).catch(error => {
             commit('setReceiptItem', null);
@@ -106,8 +106,8 @@ const actions = {
         })
     },
 
-    getAllReceiptItem({dispatch, commit}, {receiptID, sortBy, order}){
-        ReceiptService.getAllReceiptItems({receiptID, sortBy, order}).then(
+    getAllReceiptItem({dispatch, commit}, {receiptId, sortBy, order}){
+        ReceiptService.getAllReceiptItems({receiptId, sortBy, order}).then(
             receiptItems => {
                 commit('setReceiptItems', receiptItems.data);
                 const newItem = state.receiptItems.find(({ id }) => id === state.receiptItem.id);
@@ -123,8 +123,8 @@ const actions = {
         })
     },
 
-    updateReceiptItem({dispatch, commit}, {itemID, productID, quantity, price}){
-        ReceiptService.updateReceiptItem({itemID, productID, quantity: Number(quantity), price: Number(price)}).then(
+    updateReceiptItem({dispatch, commit}, {itemID, product, quantity, price}){
+        ReceiptService.updateReceiptItem({itemID, product, quantity: Number(quantity), price: Number(price)}).then(
             receiptItem => {
                 commit('setReceiptItem', receiptItem.data)
                 commit('setEditedItem', {});

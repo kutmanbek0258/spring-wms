@@ -10,7 +10,7 @@ import ProductGroups from "@/components/references/ProductGroups.vue";
 import Persons from "@/components/references/Persons.vue";
 import Depots from "@/components/references/Depots.vue";
 import Receipts from "@/components/documents/Receipts.vue";
-
+import UpdateReceipt from "@/components/documents/UpdateReceipt.vue"
 
 </script>
 
@@ -39,6 +39,9 @@ import Receipts from "@/components/documents/Receipts.vue";
         </v-col>
         <v-col cols="12">
             <Receipts/>
+        </v-col>
+        <v-col cols="12">
+            <UpdateReceipt/>
         </v-col>
     </v-row>
 </template> 

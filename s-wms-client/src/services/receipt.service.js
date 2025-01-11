@@ -33,9 +33,7 @@ class ReceiptService {
         return api.post('/receipt/create-and-fill-price-by-receipt/' + receiptID);
     }
 
-    addReceiptItem({receiptID, productID, quantity, price}){
-        const receipt = { receiptID }
-        const product = { productID }
+    addReceiptItem({receipt, product, quantity, price}){
         return api.post('/receipt-item', {
             receipt,
             product,
@@ -49,9 +47,9 @@ class ReceiptService {
         return api.get('/receipt-item/page-query', { params });
     }
 
-    updateReceiptItem({itemID, productID, quantity, price}){
+    updateReceiptItem({itemID, product, quantity, price}){
         return api.patch('/receipt-item/' + itemID, {
-            productID,
+            product,
             quantity,
             price
         })
