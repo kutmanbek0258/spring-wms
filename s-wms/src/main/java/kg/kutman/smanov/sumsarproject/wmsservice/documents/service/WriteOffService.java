@@ -38,7 +38,7 @@ public class WriteOffService {
         return writeOffMapper.toDto(repository.findById(id).orElseThrow());
     }
 
-    public Page<WriteOffDto> findByCondition(WriteOffDto writeOffDto, Pageable pageable) {
+    public Page<WriteOffDto> findByCondition(Pageable pageable) {
         Page<WriteOff> entityPage = repository.findAll(pageable);
         List<WriteOff> entities = entityPage.getContent();
         return new PageImpl<>(writeOffMapper.toDto(entities), pageable, entityPage.getTotalElements());

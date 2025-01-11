@@ -1,16 +1,15 @@
 import api from './api';
 
 class ReceiptService {
-    createReceipt({supplierID, shopID, depotID}){
+    createReceipt({supplier, depot}){
         return api.post('/receipt', {
-            supplierID,
-            shopID,
-            depotID
+            supplier,
+            depot
         })
     }
 
-    getAllReceipts({page, size}){
-        const params = { page, size }
+    getAllReceipts({page, size, sort}){
+        const params = { page, size, sort }
         return api.get('/receipt/page-query', { params })
     }
 
@@ -18,11 +17,10 @@ class ReceiptService {
         return api.get('/receipt/' + id);
     }
 
-    updateReceipt({id, supplierID, shopID, depotID}){
+    updateReceipt({id, supplier, depot}){
         return api.put('/receipt/' + id, {
-            supplierID,
-            shopID,
-            depotID
+            supplier,
+            depot
         })
     }
 
@@ -46,15 +44,13 @@ class ReceiptService {
         })
     }
 
-    getAllReceiptItems({receiptID, sortBy, order}){
-        return api.post('/receipt-item/get-all-items/' + receiptID, {
-            sortBy,
-            order
-        });
+    getAllReceiptItems({receiptId, page, size, sort}){
+        const params = { page, size, sort, receiptId }
+        return api.get('/receipt-item/page-query', { params });
     }
 
     updateReceiptItem({itemID, productID, quantity, price}){
-        return api.patch('/receipt/update-item/' + itemID, {
+        return api.patch('/receipt-item/' + itemID, {
             productID,
             quantity,
             price
@@ -62,7 +58,7 @@ class ReceiptService {
     }
 
     deleteReceiptItem({itemID}){
-        return api.delete('/receipt/delete-item/' + itemID)
+        return api.delete('/receipt-item/' + itemID)
     }
 }
 

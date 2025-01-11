@@ -38,7 +38,7 @@ public class ReceiptService {
         return receiptMapper.toDto(repository.findById(id).orElseThrow());
     }
 
-    public Page<ReceiptDto> findByCondition(ReceiptDto receiptDto, Pageable pageable) {
+    public Page<ReceiptDto> findByCondition(Pageable pageable) {
         Page<Receipt> entityPage = repository.findAll(pageable);
         List<Receipt> entities = entityPage.getContent();
         return new PageImpl<>(receiptMapper.toDto(entities), pageable, entityPage.getTotalElements());

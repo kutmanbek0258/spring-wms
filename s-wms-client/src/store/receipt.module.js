@@ -20,8 +20,8 @@ const state = {
 }
 
 const actions = {
-    createReceipt({dispatch, commit}, {supplierID, shopID, depotID}){
-        ReceiptService.createReceipt({supplierID, shopID, depotID}).then(
+    createReceipt({dispatch, commit}, {supplier, depot}){
+        ReceiptService.createReceipt({supplier, depot}).then(
             receipt => {
                 commit('setReceipt', receipt.data);
                 router.push('/depot/receipts');
@@ -33,10 +33,9 @@ const actions = {
         })
     },
 
-    getAllReceipts({dispatch, commit}, {current, pageSize}){
-        const take = pageSize;
-        const skip = (current === 0) ? 0 : pageSize * (current - 1);
-        ReceiptService.getAllReceipts({take, skip}).then(
+    getAllReceipts({dispatch, commit}, {current, pageSize, sortBy}){
+        const sort = sortBy[0].key + "," + sortBy[0].order;
+        ReceiptService.getAllReceipts({page: current - 1, size: pageSize, sort,}).then(
             receipts => {
                 commit('setReceipts', receipts.data);
                 commit('setPageSize', pageSize);
@@ -59,8 +58,8 @@ const actions = {
         })
     },
 
-    updateReceipt({dispatch, commit}, {id, supplierID, shopID, depotID}){
-        ReceiptService.updateReceipt({id, supplierID, shopID, depotID}).then(
+    updateReceipt({dispatch, commit}, {id, supplier, depot}){
+        ReceiptService.updateReceipt({id, supplier, depot}).then(
             receipt => {
                 commit('setReceipt', receipt.data);
                 router.push('/depot/receipts');
@@ -175,8 +174,8 @@ const mutations = {
     },
 
     setReceipts(state, receipts){
-        state.receipts = receipts.receipts;
-        state.totalCount = receipts.total;
+        state.receipts = receipts.content;
+        state.totalCount = receipts.totalElements;
     },
 
     setCurrent(state, current){

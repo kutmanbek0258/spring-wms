@@ -53,8 +53,8 @@ public class ReceiptController {
     }
 
     @GetMapping("/page-query")
-    public ResponseEntity<Page<ReceiptDto>> pageQuery(ReceiptDto receiptDto, @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<ReceiptDto> receiptPage = receiptService.findByCondition(receiptDto, pageable);
+    public ResponseEntity<Page<ReceiptDto>> pageQuery(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<ReceiptDto> receiptPage = receiptService.findByCondition(pageable);
         return ResponseEntity.ok(receiptPage);
     }
 

@@ -11,7 +11,9 @@ const state = {
     dialogVisibleSuppler: false,
     selectedSupplier: {
         id: {},
-        name: '',
+        person: {
+            fullName: ""
+        },
     }
 };
 
@@ -89,8 +91,8 @@ const actions = {
         commit('setDialogVisibleSuppler', true);
     },
 
-    handleSelectSupplier({dispatch, commit}, {id, name}){
-        const selectedSupplier = { id, name };
+    handleSelectSupplier({dispatch, commit}, {id, person}){
+        const selectedSupplier = { id, person };
         commit('setSelectedSupplier', selectedSupplier);
         commit('setDialogVisibleSuppler', false);
     },

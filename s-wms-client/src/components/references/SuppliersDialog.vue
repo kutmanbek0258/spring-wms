@@ -31,7 +31,7 @@ export default defineComponent({
         },
 
         handleClickItem(event, row){
-            this.handleSelectSupplier({id: row.item.id, name: row.item.person.fullName})
+            this.handleSelectSupplier({id: row.item.id, person: row.item.person})
         }
     }
 })

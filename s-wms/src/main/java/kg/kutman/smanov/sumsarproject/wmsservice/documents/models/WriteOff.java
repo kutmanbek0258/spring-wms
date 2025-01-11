@@ -43,6 +43,6 @@ public class WriteOff extends AuditableCustom<String> {
     private WriteOffReason reason;
 
     @OneToMany
-    @JoinColumn(name = "write_off_item_id")
+    @JoinColumn(name = "id")
     private List<WriteOffItem> items;
 }
