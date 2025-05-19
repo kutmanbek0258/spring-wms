@@ -1,117 +1,117 @@
 version: '3.3'
 services:
-  postgres:
+  user-service-postgres:
     image: postgres:15.2
-    container_name: j-postgres
+    container_name: user-service-postgres
     ports:
       - '5435:5432'
     environment:
-      POSTGRES_PASSWORD: "user"
-      POSTGRES_USER: "user"
-      POSTGRES_DB: "j-sso"
+      POSTGRES_PASSWORD: ${USER_SERVICE_PG_PASSWORD}
+      POSTGRES_USER: ${USER_SERVICE_PG_USER}
+      POSTGRES_DB: ${USER_SERVICE_PG_DB}
     restart: always
     volumes:
       - ./docker/postgres/data:/var/lib/postgresql/data
     networks:
-      - j-network
+      - wms-network
 
-  redis:
+  user-service-redis:
     image: redis:7.4.0
-    container_name: j-redis
+    container_name: user-service-redis
     restart: always
     ports:
       - '6379:6379'
     volumes:
       - ./docker/redis/data:/root/redis
     environment:
-      - REDIS_DATABASES=${JSSO_REDIS_DB}
-      - REDIS_PASSWORD=${JSSO_REDIS_PASSWORD}
+      - REDIS_DATABASES=${USER_SERVICE_REDIS_DB}
+      - REDIS_PASSWORD=${USER_SERVICE_REDIS_PASSWORD}
     networks:
-      - j-network
+      - wms-network
 
-  elasticsearch:
+  search-service:
     restart: always
     build:
       context: ./elasticsearch
       dockerfile: Dockerfile
-    container_name: j-elasticsearch
+    container_name: search-service
     volumes:
       - ./docker/elastic/data:/usr/share/elasticsearch/data
     environment:
       discovery.type: 'single-node'
       xpack.security.enabled: 'true'
-      ELASTIC_USERNAME: ${ELASTICSEARCH_USERNAME}
-      ELASTIC_PASSWORD: ${ELASTICSEARCH_PASSWORD}
+      ELASTIC_USERNAME: ${SEARCH_SERVICE_USERNAME}
+      ELASTIC_PASSWORD: ${SEARCH_SERVICE_PASSWORD}
     ports:
       - '9200:9200'
     networks:
-      - j-network
+      - wms-network
 
-  kibana:
+  search-service-kibana:
     restart: always
     image: kibana:7.8.1
-    container_name: j-kibana
+    container_name: search0-service-kibana
     environment:
       XPACK_SECURITY_ENABLED: 'true'
-      ELASTICSEARCH_HOSTS: ${ELASTICSEARCH_HOST}
-      ELASTICSEARCH_USERNAME: ${ELASTICSEARCH_USERNAME}
-      ELASTICSEARCH_PASSWORD: ${ELASTICSEARCH_PASSWORD}
+      ELASTICSEARCH_HOSTS: ${SEARCH_SERVICE_HOST}
+      ELASTICSEARCH_USERNAME: ${SEARCH_SERVICE_USERNAME}
+      ELASTICSEARCH_PASSWORD: ${SEARCH_SERVICE_PASSWORD}
     ports:
       - 5601:5601
     networks:
-      - j-network
+      - wms-network
 
-  sso:
-    container_name: j-sso
+  user-service:
+    container_name: user-service
     build:
-      context: ./j-sso
+      context: ./user-service
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - '7777:7777'
       - '8777:8000'
     environment:
-      JSSO_SMTP_EMAIL: <set_value>
-      JSSO_SMTP_EMAIL_PASSWORD: <set_value>
-      JSSO_GITHUB_CLIENT_ID: <set_value>
-      JSSO_GITHUB_CLIENT_SECRET: <set_value>
-      JSSO_GOOGLE_CLIENT_ID: <set_value>
-      JSSO_GOOGLE_CLIENT_SECRET: <set_value>
-      JSSO_YANDEX_CLIENT_ID: <set_value>
-      JSSO_YANDEX_CLIENT_SECRET: <set_value>
-      JSSO_REDIS_DB: ${JSSO_REDIS_DB}
-      JSSO_REDIS_HOST: ${JSSO_REDIS_HOST}
-      JSSO_REDIS_PORT: ${JSSO_REDIS_PORT}
-      JSSO_REDIS_PASSWORD: ${JSSO_REDIS_PASSWORD}
-      JSSO_PG_HOST: postgres
-      JSSO_PG_PORT: 5432
-      JSSO_PG_DB: j-sso
-      JSSO_PG_USER: user
-      JSSO_PG_PASSWORD: user
-      JSSO_PATH_STORAGE: /j-file-storage
+      USER_SERVICE_SMTP_EMAIL: <set_value>
+      USER_SERVICE_SMTP_PASSWORD: <set_value>
+      USER_SERVICE_GITHUB_CLIENT_ID: <set_value>
+      USER_SERVICE_GITHUB_CLIENT_SECRET: <set_value>
+      USER_SERVICE_GOOGLE_CLIENT_ID: <set_value>
+      USER_SERVICE_GOOGLE_CLIENT_SECRET: <set_value>
+      USER_SERVICE_YANDEX_CLIENT_ID: <set_value>
+      USER_SERVICE_YANDEX_CLIENT_SECRET: <set_value>
+      USER_SERVICE_REDIS_DB: ${USER_SERVICE_REDIS_DB}
+      USER_SERVICE_REDIS_HOST: ${USER_SERVICE_REDIS_HOST}
+      USER_SERVICE_REDIS_PORT: ${USER_SERVICE_REDIS_PORT}
+      USER_SERVICE_REDIS_PASSWORD: ${USER_SERVICE_REDIS_PASSWORD}
+      USER_SERVICE_PG_HOST: ${USER_SERVICE_PG_HOST}
+      USER_SERVICE_PG_PORT: ${USER_SERVICE_PG_PORT}
+      USER_SERVICE_PG_DB: ${USER_SERVICE_PG_DB}
+      USER_SERVICE_PG_USER: ${USER_SERVICE_PG_USER}
+      USER_SERVICE_PG_PASSWORD: ${USER_SERVICE_PG_PASSWORD}
+      USER_SERVICE_PATH_STORAGE: /user-service-file-store
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
     volumes:
       - ./docker/j-sso/file-storage:/j-file-storage
     depends_on:
-      - postgres
-      - redis
+      - user-service-postgres
+      - user-service-redis
     networks:
-      - j-network
+      - wms-network
 
-  wms-postgres:
+  wms-service-postgres:
     image: postgres:15.2
-    container_name: wms-postgres
+    container_name: wms-service-postgres
     ports:
       - '5432:5432'
     environment:
-      SWMS_PG_USER: "user"
-      SWMS_PG_PASSWORD: "user"
-      SWMS_PG_DB: "s-wms"
+      POSTGRES_USER: ${WMS_SERVICE_PG_USER}
+      POSTGRES_PASSWORD: ${WMS_SERVICE_PG_PASSWORD}
+      POSTGRES_DB: ${WMS_SERVICE_PG_DB}
     restart: always
     volumes:
       - ./docker/wms-postgres/data:/var/lib/postgresql/data
     networks:
-      - j-network
+      - wms-network
 
   wms-service:
     container_name: wms-service
@@ -123,21 +123,21 @@ services:
       - '9001:9001'
       - '9777:8000'
     environment:
-      SWMS_SSO_URL: http://j-sso:7777
-      SWMS_PG_HOST: wms-postgres
-      SWMS_PG_PORT: 5432
-      SWMS_PG_DB: s-wms
-      SWMS_PG_USER: user
-      SWMS_PG_PASSWORD: user
-      ELASTIC_HOST: ${ELASTICSEARCH_HOST}
-      ELASTIC_USERNAME: ${ELASTICSEARCH_USERNAME}
-      ELASTIC_PASSWORD: ${ELASTICSEARCH_PASSWORD}
+      SWMS_SSO_URL: http://user-service:7777
+      SWMS_PG_HOST: ${WMS_SERVICE_PG_HOST}
+      SWMS_PG_PORT: ${WMS_SERVICE_PG_PORT}
+      SWMS_PG_DB: ${WMS_SERVICE_PG_DB}
+      SWMS_PG_USER: ${WMS_SERVICE_PG_USER}
+      SWMS_PG_PASSWORD: ${WMS_SERVICE_PG_PASSWORD}
+      ELASTIC_HOST: ${SEARCH_SERVICE_HOST}
+      ELASTIC_USERNAME: ${SEARCH_SERVICE_USERNAME}
+      ELASTIC_PASSWORD: ${SEARCH_SERVICE_PASSWORD}
     depends_on:
-      - elasticsearch
-      - wms-postgres
+      - wms-service-postgres
+      - search-service
       - wms-client
     networks:
-      - j-network
+      - wms-network
 
   wms-client:
     container_name: wms-client
@@ -152,10 +152,10 @@ services:
     ports:
       - 8080:8080
     networks:
-      - j-network
+      - wms-network
 
   swagger-ui:
-    container_name: j-swagger-ui
+    container_name: swagger-ui
     build:
       context: ./j-swagger-ui
       dockerfile: Dockerfile
@@ -164,10 +164,10 @@ services:
       - '7778:7778'
       - '6777:8000'
     networks:
-      - j-network
+      - wms-network
 
 networks:
-  j-network:
+  wms-network:
     ipam:
       driver: default
       config:

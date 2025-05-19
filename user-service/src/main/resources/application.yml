@@ -1,0 +1,81 @@
+server:
+  port: 7777
+  error:
+    include-stacktrace: always
+  servlet:
+    context-path:
+
+logging:
+  level:
+    root: INFO
+#    org.springframework.security.web.FilterChainProxy: DEBUG
+
+spring:
+  application:
+    name: j-sso
+  output:
+    ansi:
+      enabled: ${JSSO_ANSI_ENABLED:ALWAYS}
+  mvc:
+    static-path-pattern: /static/**
+    cors:
+      configs:
+        - pattern: /**
+          allowed-origins: "http://127.0.0.1:8080,http://localhost:8080,http://localhost:7778,http://localhost:7979,http://localhost:8181,http://localhost:9090"
+          allowed-headers: "*"
+          exposed-headers: ${spring.security.oauth2.authorizationserver.custom-handler-header-name}
+          allowed-methods: "*"
+          allow-credentials: true
+  web:
+    resources:
+      static-locations: classpath:static
+  session:
+    timeout: 1800                 # Время жизни сессии (в секундах)
+    redis:
+      flush-mode: on_save         # Указываем, когда изменения сеанса записываются в хранилище (immediate или on_save)
+      namespace: j-sso:session    # Пространство имен для ключей, используемых для хранения сессий.
+      save-mode: on_set_attribute # Определяет в какой момент происходит сохранение изменений сессии (on_set_attribute, on_get_attribute, always)
+  config:
+    import:
+      - application-data.yml
+      - application-security.yml
+  task:
+    scheduling:
+      pool:
+        size: 2
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${USER_SERVICE_SMTP_EMAIL}
+    password: ${USER_SERVICE_SMTP_PASSWORD}
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            required: true
+            emable: true
+
+yandex-avatar-url: https://avatars.yandex.net/get-yapic/{avatarId}/islands-retina-50
+
+otp-store:
+  cookie-name: j-sso-temporary-session
+  cookie-domain: localhost
+  cookie-max-age: 180
+
+file-store:
+  base-path: ${USER_SERVICE_PATH_STORAGE:~/user-service-file-store}
+
+scheduled-tasks:
+  delete-old-events:
+    cron: '@daily'
+    saved-period-days: 1
+  notify-delete-users:
+    cron: '@daily'
+
+rest-clients:
+  service-client-connection-timeout: 10000
+  service-client-request-timeout: 30000

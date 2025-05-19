@@ -39,7 +39,7 @@
     </parent>
 
     <modules>
-        <module>j-sso</module>
+        <module>user-service</module>
         <module>s-wms</module>
         <module>j-swagger-ui</module>
     </modules>
