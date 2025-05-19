@@ -40,8 +40,8 @@
 
     <modules>
         <module>user-service</module>
-        <module>s-wms</module>
-        <module>j-swagger-ui</module>
+        <module>wms-service</module>
+        <module>swagger-ui</module>
     </modules>
 
     <dependencyManagement>

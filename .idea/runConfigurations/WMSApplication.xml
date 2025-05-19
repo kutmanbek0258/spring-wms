@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="WMSApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
-    <module name="s-wms" />
+    <module name="wms-service" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="kg.kutman.smanov.sumsarproject.wmsservice.*" />

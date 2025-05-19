@@ -12,9 +12,9 @@ springdoc:
     client-credentials-enabled: true
     authorization-code-enabled: true
   auth-oauth:
-    token-url: http://localhost:7777/oauth2/token
-    authorization_url: http://localhost:7777/oauth2/authorize
-    refresh-url: http://localhost:7777/oauth2/token
+    token-url: ${WMS_SERVICE_SSO_URL:http://localhost:7777}/oauth2/token
+    authorization_url: ${WMS_SERVICE_SSO_URL:http://localhost:7777}/oauth2/authorize
+    refresh-url: ${WMS_SERVICE_SSO_URL:http://localhost:7777}/oauth2/token
   swagger-ui:
     enabled: false
   api-docs:
@@ -42,11 +42,11 @@ spring:
         opaquetoken:
           client-id: j-service-client
           client-secret: j-service-client
-          introspection-uri: ${SWMS_SSO_URL:http://localhost:7777}/oauth2/token-info
+          introspection-uri: ${WMS_SERVICE_SSO_URL:http://localhost:7777}/oauth2/token-info
   datasource:
-    url: jdbc:postgresql://${SWMS_PG_HOST:localhost}:${SWMS_PG_PORT:5432}/${SWMS_PG_DB:s-wms}
-    username: ${SWMS_PG_USER:user}
-    password: ${SWMS_PG_PASSWORD:user}
+    url: jdbc:postgresql://${WMS_SERVICE_PG_HOST:localhost}:${WMS_SERVICE_PG_PORT:5432}/${WMS_SERVICE_PG_DB:wms}
+    username: ${WMS_SERVICE_PG_USER:user}
+    password: ${WMS_SERVICE_PG_PASSWORD:user}
     driver-class-name: "org.postgresql.Driver"
     hikari:
       connection-timeout: 30000
@@ -66,9 +66,9 @@ spring:
     change-log: classpath:database/db/changelog.sql
     contexts: prod, dev
   elasticsearch:
-    uris: ${ELASTICSEARCH_HOST:http://localhost:9200}
-    username: ${ELASTICSEARCH_USERNAME:elastic}
-    password: ${ELASTICSEARCH_PASSWORD:admin}
+    uris: ${SEARCH_SERVICE_HOST:http://localhost:9200}
+    username: ${SEARCH_SERVICE_USERNAME:elastic}
+    password: ${SEARCH_SERVICE_PASSWORD:admin}
   servlet:
     multipart:
       max-request-size: 50MB

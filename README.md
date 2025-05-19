@@ -3,7 +3,7 @@
 1. [j-sso](./j-sso/README.md) - Single Sign On сервис.
 2. [s-wms](./s-wms/README.md) - Warehouse Management Service, который работает в паре с `j-sso`
 3. [j-swagger-ui](./j-swagger-ui/README.md) - документация сервисов в swagger-ui.
-4. [s-wms-client](./s-wms-client/README.md) - клиент WMS аутентифицируется с `j-sso`.
+4. [s-wms-client](wms-client/README.md) - клиент WMS аутентифицируется с `j-sso`.
 
 ## Версии и используемые инструменты
 

@@ -1,9 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="SwaggerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ENABLE_JMX_AGENT" value="false" />
-    <option name="ENABLE_LAUNCH_OPTIMIZATION" value="false" />
-    <module name="j-swagger-ui" />
+    <module name="swagger-ui" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="rkg.kutman.smanov.sumsarproject.docswagger.SwaggerApplication" />
+    <option name="ENABLE_LAUNCH_OPTIMIZATION" value="false" />
+    <option name="ENABLE_JMX_AGENT" value="false" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

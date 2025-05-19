@@ -11,7 +11,7 @@ services:
       POSTGRES_DB: ${USER_SERVICE_PG_DB}
     restart: always
     volumes:
-      - ./docker/postgres/data:/var/lib/postgresql/data
+      - ./docker/user-service-postgres/data:/var/lib/postgresql/data
     networks:
       - wms-network
 
@@ -22,7 +22,7 @@ services:
     ports:
       - '6379:6379'
     volumes:
-      - ./docker/redis/data:/root/redis
+      - ./docker/user-service-redis/data:/root/redis
     environment:
       - REDIS_DATABASES=${USER_SERVICE_REDIS_DB}
       - REDIS_PASSWORD=${USER_SERVICE_REDIS_PASSWORD}
@@ -36,7 +36,7 @@ services:
       dockerfile: Dockerfile
     container_name: search-service
     volumes:
-      - ./docker/elastic/data:/usr/share/elasticsearch/data
+      - ./docker/search-service/data:/usr/share/elasticsearch/data
     environment:
       discovery.type: 'single-node'
       xpack.security.enabled: 'true'
@@ -91,10 +91,36 @@ services:
       USER_SERVICE_PATH_STORAGE: /user-service-file-store
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
     volumes:
-      - ./docker/j-sso/file-storage:/j-file-storage
+      - ./docker/user-service/file-storage:/user-service-file-store
     depends_on:
       - user-service-postgres
       - user-service-redis
+    networks:
+      - wms-network
+
+  wms-service:
+    container_name: wms-service
+    build:
+      context: ./wms-service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '9001:9001'
+      - '9777:8000'
+    environment:
+      WMS_SERVICE_SSO_URL: ${WMS_SERVICE_SSO_URL}
+      WMS_SERVICE_PG_HOST: ${WMS_SERVICE_PG_HOST}
+      WMS_SERVICE_PG_PORT: ${WMS_SERVICE_PG_PORT}
+      WMS_SERVICE_PG_DB: ${WMS_SERVICE_PG_DB}
+      WMS_SERVICE_PG_USER: ${WMS_SERVICE_PG_USER}
+      WMS_SERVICE_PG_PASSWORD: ${WMS_SERVICE_PG_PASSWORD}
+      SEARCH_SERVICE_HOST: ${SEARCH_SERVICE_HOST}
+      SEARCH_SERVICE_USERNAME: ${SEARCH_SERVICE_USERNAME}
+      SEARCH_SERVICE_PASSWORD: ${SEARCH_SERVICE_PASSWORD}
+    depends_on:
+      - wms-service-postgres
+      - search-service
+      - wms-client
     networks:
       - wms-network
 
@@ -109,33 +135,7 @@ services:
       POSTGRES_DB: ${WMS_SERVICE_PG_DB}
     restart: always
     volumes:
-      - ./docker/wms-postgres/data:/var/lib/postgresql/data
-    networks:
-      - wms-network
-
-  wms-service:
-    container_name: wms-service
-    build:
-      context: ./s-wms
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    ports:
-      - '9001:9001'
-      - '9777:8000'
-    environment:
-      SWMS_SSO_URL: http://user-service:7777
-      SWMS_PG_HOST: ${WMS_SERVICE_PG_HOST}
-      SWMS_PG_PORT: ${WMS_SERVICE_PG_PORT}
-      SWMS_PG_DB: ${WMS_SERVICE_PG_DB}
-      SWMS_PG_USER: ${WMS_SERVICE_PG_USER}
-      SWMS_PG_PASSWORD: ${WMS_SERVICE_PG_PASSWORD}
-      ELASTIC_HOST: ${SEARCH_SERVICE_HOST}
-      ELASTIC_USERNAME: ${SEARCH_SERVICE_USERNAME}
-      ELASTIC_PASSWORD: ${SEARCH_SERVICE_PASSWORD}
-    depends_on:
-      - wms-service-postgres
-      - search-service
-      - wms-client
+      - ./docker/wms--service-postgres/data:/var/lib/postgresql/data
     networks:
       - wms-network
 
@@ -147,7 +147,7 @@ services:
         max-size: "10m"
         max-file: "10"
     build:
-      context: ./s-wms-client
+      context: wms-client
       dockerfile: Dockerfile
     ports:
       - 8080:8080
@@ -157,7 +157,7 @@ services:
   swagger-ui:
     container_name: swagger-ui
     build:
-      context: ./j-swagger-ui
+      context: ./swagger-ui
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:

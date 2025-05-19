@@ -2,14 +2,14 @@
   <configuration default="false" name="SSOApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <option name="ACTIVE_PROFILES" value="production" />
     <envs>
-      <env name="JSSO_GITHUB_CLIENT_ID" value="set_value" />
-      <env name="JSSO_GITHUB_CLIENT_SECRET" value="set_value" />
-      <env name="JSSO_GOOGLE_CLIENT_ID" value="set_value" />
-      <env name="JSSO_GOOGLE_CLIENT_SECRET" value="set_value" />
-      <env name="JSSO_SMTP_EMAIL" value="set_value" />
-      <env name="JSSO_SMTP_EMAIL_PASSWORD" value="set_value" />
-      <env name="JSSO_YANDEX_CLIENT_ID" value="set_value" />
-      <env name="JSSO_YANDEX_CLIENT_SECRET" value="set_value" />
+      <env name="USER_SERVICE_GITHUB_CLIENT_ID" value="set_value" />
+      <env name="USER_SERVICE_GITHUB_CLIENT_SECRET" value="set_value" />
+      <env name="USER_SERVICE_GOOGLE_CLIENT_ID" value="set_value" />
+      <env name="USER_SERVICE_GOOGLE_CLIENT_SECRET" value="set_value" />
+      <env name="USER_SERVICE_SMTP_EMAIL" value="set_value" />
+      <env name="USER_SERVICE_SMTP_EMAIL_PASSWORD" value="set_value" />
+      <env name="USER_SERVICE_YANDEX_CLIENT_ID" value="set_value" />
+      <env name="USER_SERVICE_YANDEX_CLIENT_SECRET" value="set_value" />
     </envs>
     <module name="user-service" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="kg.kutman.smanov.sumsarproject.sso.SSOApplication" />
