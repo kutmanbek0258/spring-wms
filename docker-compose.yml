@@ -135,7 +135,7 @@ services:
       POSTGRES_DB: ${WMS_SERVICE_PG_DB}
     restart: always
     volumes:
-      - ./docker/wms--service-postgres/data:/var/lib/postgresql/data
+      - ./docker/wms-service-postgres/data:/var/lib/postgresql/data
     networks:
       - wms-network
 
