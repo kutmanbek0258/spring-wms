@@ -23,10 +23,11 @@
     </properties>
 
 	<dependencies>
+
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway-mvc</artifactId>
-            <version>4.1.5</version>
+            <version>4.1.1</version>
         </dependency>
 
         <dependency>
